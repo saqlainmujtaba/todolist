@@ -1,4 +1,5 @@
 //jshint esversion:6
+require('dotenv').config()
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -12,23 +13,10 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 // mongodb://localhost:27017
-mongoose.connect("mongodb://127.0.0.1:27017/todolistDB");
+const mongourl = process.env.MONGO ;
+console.log(mongourl);
 
-// mongoose
-//   .connect("mongodb://localhost:27017/todolistDB", )
-//   .then(() => {
-//     app.listen(3000, function () {
-//       console.log("Saqlain DB Server is running on Port 3000");
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(
-//       "err in connecting to db"
-//     );
-
-//     console.log(err);
-//   });
-//
+mongoose.connect(`${mongourl}/todolistDB`);
 
 const itemsSchema = {
   name: String,
@@ -76,32 +64,31 @@ app.get("/", async function (req, res) {
   }
 });
 
-app.get("/:customListName", function (req, res) {
+app.get("/:customListName", async function (req, res) {
   const customListName = _.capitalize(req.params.customListName);
 
-  List.findOne({ name: customListName }, function (err, foundList) {
-    if (!err) {
-      if (!foundList) {
-        //Create a new list
-        const list = new List({
-          name: customListName,
-          items: defaultItems,
-        });
-        list.save();
-        res.redirect("/" + customListName);
-      } else {
-        //Show an existing list
+  const foundList = await List.findOne({ name: customListName });
 
-        res.render("list", {
-          listTitle: foundList.name,
-          newListItems: foundList.items,
-        });
-      }
-    }
-  });
+  if (!foundList) {
+    //Create a new list
+    const list = new List({
+      name: customListName,
+      items: defaultItems,
+    });
+    list.save();
+    res.redirect("/" + customListName);
+  } else {
+    //Show an existing list
+
+    res.render("list", {
+      listTitle: foundList.name,
+      newListItems: foundList.items,
+      year: yearr,
+    });
+  }
 });
 
-app.post("/", function (req, res) {
+app.post("/", async function (req, res) {
   const itemName = req.body.newItem;
   const listName = req.body.list;
 
@@ -113,11 +100,10 @@ app.post("/", function (req, res) {
     item.save();
     res.redirect("/");
   } else {
-    List.findOne({ name: listName }, function (err, foundList) {
-      foundList.items.push(item);
-      foundList.save();
-      res.redirect("/" + listName);
-    });
+    const foundList = await List.findOne({ name: listName });
+    foundList.items.push(item);
+    foundList.save();
+    res.redirect("/" + listName);
   }
 });
 
@@ -129,17 +115,12 @@ app.post("/delete", async function (req, res) {
     await Item.findByIdAndDelete(checkedItemId);
     console.log("Successfully deleted checked item.");
     res.redirect("/");
-  
   } else {
-    List.findOneAndUpdate(
+    await List.findOneAndUpdate(
       { name: listName },
-      { $pull: { items: { _id: checkedItemId } } },
-      function (err, foundList) {
-        if (!err) {
-          res.redirect("/" + listName);
-        }
-      }
+      { $pull: { items: { _id: checkedItemId } } }
     );
+    res.redirect("/" + listName);
   }
 });
 
