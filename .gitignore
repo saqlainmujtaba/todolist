@@ -1,2 +1,3 @@
-/node_modules
-// this is foler which is not uploaded
+# // the folder and file which is not uploaded to the github
+node_modules
+.env

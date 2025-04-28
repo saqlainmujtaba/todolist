@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js"
   },
   "author": "Saqlain Mujtaba",
   "license": "ISC",
@@ -13,7 +13,7 @@
     "ejs": "^3.1.8",
     "express": "^4.16.3",
     "lodash": "^4.17.11",
-    "mongoose": "^5.3.4",
-    "nodemon": "^2.0.22"
+    "mongoose": "^8.14.0",
+    "nodemon": "^3.1.10"
   }
 }
