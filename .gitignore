@@ -1,3 +1,4 @@
 # // the folder and file which is not uploaded to the github
-node_modules
+# Dependency directories
+node_modules/
 .env
