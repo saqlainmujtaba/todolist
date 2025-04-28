@@ -1,4 +1,15 @@
-# // the folder and file which is not uploaded to the github
-# Dependency directories
+
+# Node.js dependencies
 node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
 .env
+
+# OS files
+.DS_Store
+Thumbs.db
