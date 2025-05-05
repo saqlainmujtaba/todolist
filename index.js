@@ -10,19 +10,48 @@ const app = express();
 
 app.set("view engine", "ejs");
 
+// utills 
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 // mongodb://localhost:27017
 const mongourl = process.env.MONGO ;
-console.log(mongourl);
+// console.log(mongourl);
+if (!mongourl) {
+  console.error(`there are no mongourl`)
+}
 
-mongoose.connect(`${mongourl}/todolistDB`);
+mongoose.connect(`${mongourl}/todolistDB`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("Connected to MongoDB successfully");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
+// mongodb schema
 
+// item schema
 const itemsSchema = {
   name: String,
 };
 
+//  list schema
+const listSchema = {
+  name: String,
+  items: [itemsSchema],
+};
+
+// mongo models
+
+// item model 
 const Item = mongoose.model("Item", itemsSchema);
+
+
+// list model 
+const List = mongoose.model("List", listSchema);
+
+
 
 const item1 = new Item({
   name: "Welcome to your todolist!",
@@ -38,16 +67,17 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-const listSchema = {
-  name: String,
-  items: [itemsSchema],
-};
-
-const List = mongoose.model("List", listSchema);
 const yearr = new Date().getFullYear();
 
 app.get("/", async function (req, res) {
   const foundItems = await Item.find();
+  if (!foundItems) {
+    
+    await Item.insertMany(defaultItems);
+    console.log("Succefully saved default items to DB");
+  
+    res.redirect("/");
+  }
   console.log(foundItems);
 
   if (foundItems.length === 0) {
@@ -129,5 +159,5 @@ app.get("/about", function (req, res) {
 });
 
 app.listen(3000, function () {
-  console.log("Server started on localhost:3000");
+  console.log("Server started on http://localhost:3000");
 });
