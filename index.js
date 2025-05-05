@@ -78,7 +78,7 @@ app.get("/", async function (req, res) {
   
     res.redirect("/");
   }
-  console.log(foundItems);
+  // console.log(foundItems);
 
   if (foundItems.length === 0) {
     await Item.insertMany(defaultItems);
@@ -158,6 +158,19 @@ app.get("/about", function (req, res) {
   res.render("about");
 });
 
-app.listen(3000, function () {
-  console.log("Server started on http://localhost:3000");
-});
+// while testing/running in the local enviroment 
+// use this 
+// app.listen(3000, function () {
+//   console.log("Server started on http://localhost:3000");
+// });
+
+
+
+//  use this when you run with vercel deployment 
+if (require.main === module) {
+  app.listen(3000, () => {
+    console.log('Server started on http://localhost:3000');
+  });
+} else {
+  module.exports = app;
+}
