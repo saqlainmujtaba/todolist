@@ -11,11 +11,11 @@ const app = express();
 app.set("view engine", "ejs");
 
 // utills 
+const path = require("path");
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
-const path = require('path');
-app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, "../public"))); // ✅ Correct way
+app.set("views", path.join(__dirname, "../views"));
 
 // mongodb://localhost:27017
 const mongourl = process.env.MONGO ;
