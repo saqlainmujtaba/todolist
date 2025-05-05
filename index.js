@@ -14,6 +14,9 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+const path = require('path');
+app.set('views', path.join(__dirname, 'views'));
+
 // mongodb://localhost:27017
 const mongourl = process.env.MONGO ;
 // console.log(mongourl);
